@@ -1,0 +1,768 @@
+---
+title: "MB5370 - Module 4"
+author: "Maria Bologna"
+date: "2023-05-04"
+output: html_document
+---
+
+# WORKSHOP 1 - Reproducible work ####
+
+## Installing packages & dataset
+
+```{r}
+install.packages("tidyverse")
+library(tidyverse)
+
+#### ctrl + alt + i -> adds a chunk =)
+
+mpg
+summary(mpg)
+```
+
+## 2.6 Create your first ggplot
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+## 2.7 Understand the "grammar of graphics"
+
+### 2.7.1 Graphing templates
+
+```{r}
+#ggplot(data = <DATA>) + 
+# <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+### 2.7.2 Aesthetic mappings
+
+```{r}
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, colour = class)) #change point COLOUR by class
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, size = class)) #change point SIZE by class
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class)) #change point TRANSPARENCY by class
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class)) #change point SHAPE by class
+
+## Manually setting properties
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+## 2.8 Troubleshooting
+
+```{r}
+ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+## 2.9 Facet and panel plots
+
+```{r}
+# Facet plot with 1 variable
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+
+# Facet plot with >1 variable
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl) #facet_grid(), ~ to separate variables
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(. ~ cyl) #use a . to not facet in rows or columns (ex. *facet_grid(. ~ cyl)*)
+```
+
+## 2.10 Fitting simple lines
+
+```{r}
+# Displaying data as POINTS
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) #**geom_point**
+
+# Displaying data as LINES
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy)) #**geom_smooth**
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv)) #change line type per variable
+ ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
+
+# Plotting multiple geoms
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth() #no variables specified
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth() #display different aesthetics in different layers
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE) #select and plot only one subset in a different layer (ex. *(class == "subcompact")*)
+```
+
+## 2.11 Transformations and Stats
+
+### 2.11.1 Plotting statistics
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut))
+ggplot(data = diamonds) + 
+  stat_count(mapping = aes(x = cut)) #use **stat_count** for same result
+```
+
+### 2.11.2 Overriding defaults in ggplot2
+
+```{r}
+demo <- tribble(
+  ~cut,         ~freq,
+  "Fair",       1610,
+  "Good",       4906,
+  "Very Good",  12082,
+  "Premium",    13791,
+  "Ideal",      21551
+) #override a default stat (count, summary) to identity (variable raw value)
+demo
+ggplot(data = demo) +
+  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity") #plot results
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = after_stat(prop), group = 1)) #override aesthetic from count to proportion of data set
+```
+
+### 2.11.3 Plotting statistical details
+
+```{r}
+ggplot(data = diamonds) + 
+  stat_summary(
+    mapping = aes(x = cut, y = depth),
+    fun.min = min,
+    fun.max = max,
+    fun = median
+  ) #show more detail on data set
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = after_stat(prop))) #proportion bar chart
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = color, y = after_stat(prop))) #proportion bar chart
+#both bar charts are missing the group=1 input, therefore all classes for the CUT variable are the same size
+```
+
+## 2.12 Positional adjustments
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, colour = cut)) #differentiate x-variable values with bar outline
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = cut)) #differentiate x-variable values with bar colors
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) + 
+  geom_bar(alpha = 1/5, position = "identity") #alter transparency
+
+ggplot(data = diamonds, mapping = aes(x = cut, colour = clarity)) + 
+  geom_bar(fill = NA, position = "identity") #color the bar outlines with no fill color
+
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill") #make stacked bars the same height maintaining original proportions
+
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge") #place overlapping objects beside one another
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), position = "jitter") #add some random noise to each point to avoid overlapping in a scatterplot
+```
+
+## 2.13 The layered grammar of graphics
+
+```{r}
+#ggplot(data = <DATA>) + 
+#  <GEOM_FUNCTION>(
+#     mapping = aes(<MAPPINGS>),
+#     stat = <STAT>, 
+#     position = <POSITION>) +
+#  <FACET_FUNCTION> #updated template to make a ggplot
+```
+
+----------
+
+# WORKSHOP 2 - Using ggplot2 for communication ####
+
+## 3.1 Labels
+
+```{r}
+#Adding a title with labs()
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Fuel efficiency generally decreases with engine size") #*labs(title= )*
+
+#Adding subtitles and caption with labs()
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Fuel efficiency generally decreases with engine size",
+    subtitle = "Two seaters (sports cars) are an exception because of their light weight",
+    caption = "Data from fueleconomy.gov") #**labs(title= ,subtitle= ,caption= )**
+
+#Replacing axis labels and legend titles
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    colour = "Car type") #**labs(x= ,y=, colour= )**
+```
+
+## 3.2 Annotations
+
+```{r}
+#Making annotations on the graph itself 
+best_in_class <- mpg %>%
+  group_by(class) %>%
+  filter(row_number(desc(hwy)) == 1)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  geom_text(aes(label = model), data = best_in_class)
+```
+
+## 3.3 Scales
+
+```{r}
+#Default scales
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class))
+
+#Customising scales
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) +
+  scale_x_continuous(breaks = seq(0, 10, by = 2)) +
+  scale_y_continuous(breaks = seq(15, 40, by = 5)) +
+  scale_colour_discrete() #use code from 3.4 chunk to change scale of x and y axis within dataset 
+```
+
+## 3.4 Axis ticks
+
+```{r}
+#Changing axis ticks from original graph
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  scale_y_continuous(breaks = seq(15, 40, by = 5))
+
+seq(15,40, by=5) #creating a sequence of numbers
+
+#Deleting axis ticks numerical values
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  scale_x_continuous(labels = NULL) +
+  scale_y_continuous(labels = NULL)
+```
+
+## 3.5 Legends and colour schemes
+
+```{r}
+base <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = class)) #create a legend
+
+#Changing legend position
+base + theme(legend.position = "left")
+base + theme(legend.position = "top")
+base + theme(legend.position = "bottom")
+base + theme(legend.position = "right") #default legend setting
+
+#Hiding legend
+base + theme(legend.position = "none") #*legend.position="none" to hide legend after creating one
+```
+
+## 3.6 Replacing a scale
+
+```{r}
+ggplot(diamonds, aes(carat, price)) +
+  geom_bin2d() + 
+  scale_x_log10() + 
+  scale_y_log10() #
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = drv)) #default colour scale
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = drv)) +
+  scale_colour_brewer(palette = "Set1") #custom colour scale
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = drv, shape = drv)) +
+  scale_colour_brewer(palette = "Set1") #custom colour scale & different point styles for each data type
+
+# Using predefined colours
+presidential %>%
+  mutate(id = 33 + row_number()) %>%
+  ggplot(aes(start, id, colour = party)) +
+    geom_point() +
+    geom_segment(aes(xend = end, yend = id)) +
+    scale_colour_manual(values = c(Republican = "red", Democratic = "blue")) #*scale_colour_manual()
+
+# Using a preset colour package
+
+install.packages('viridis') #package "viridis"
+install.packages('hexbin')
+library(viridis)
+library(hexbin)
+
+df <- tibble( #fake dataset to create a plot 
+  x = rnorm(10000),
+  y = rnorm(10000)
+)
+ggplot(df, aes(x, y)) +
+  geom_hex() + #new geom
+  coord_fixed()
+
+ggplot(df, aes(x, y)) +
+  geom_hex() +
+  viridis::scale_fill_viridis() +
+  coord_fixed()
+```
+
+## 3.7 Themes
+
+```{r}
+#Trying different default themes
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_bw() #theme_bw()
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_light() #theme_light()
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_classic() #theme_classic()
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_dark() #theme_dark()
+
+#Developing a custom theme
+theme (panel.border = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="bottom",
+        legend.title=element_blank(),
+        legend.text=element_text(size=8),
+        panel.grid.major = element_blank(),
+        legend.key = element_blank(),
+        legend.background = element_blank(),
+        axis.text.y=element_text(colour="pink"),
+        axis.text.x=element_text(colour="pink"),
+        text=element_text(family="Arial"))
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme(panel.border = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="bottom",
+        legend.title=element_blank(),
+        legend.text=element_text(size=8),
+        panel.grid.major = element_blank(),
+        legend.key = element_blank(),
+        legend.background = element_blank(),
+        axis.text.y=element_text(colour="pink"),
+        axis.text.x=element_text(colour="pink"),
+        text=element_text(family="Arial"))
+```
+
+## 3.8 Saving and exporting plots
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) + geom_point()
+
+ggsave("my-plot.pdf")
+
+```
+
+----------
+
+# WORKSHOP 3 - Reproducible work ####
+
+```{r}
+#Setting up Github
+
+install.packages("usethis")
+library(usethis)
+use_git_config(user.name = "thestralcentauro13093", user.email = "bolognamaria21@gmail.com")
+```
+
+----------
+
+# WORKSHOP 4 - Data wrangling in R ####
+
+## 5.3 What is a tibble?
+
+```{r}
+#library(tidyverse)
+
+#Converting regular data frames in tibbles
+iris 
+str(iris)
+summary(iris)
+as_tibble(iris) #*as_tibble()
+
+#Calling new variables
+tibble(
+  x = 1:5, 
+  y = 1, 
+  z = x ^ 2 + y)
+
+#Building a dataframe with *data.frame()
+#data.frame(c(x = 1:5, y = 1, z = x ^ 2 + y)) --> Error in data.frame(c(x = 1:5, y = 1, z = x^2 + y)) : object 'x' not found
+  
+#Working with non-syntactic variables
+tb <- tibble(
+  `:)` = "smile", 
+  ` ` = "space",
+  `2000` = "number"
+)
+tb
+
+#Using tribbles (transposed tibbles)
+tribble(
+  ~x, ~y, ~z,
+  #--|--|----
+  "a", 2, 3.6,
+  "b", 1, 8.5) #*tribble() to help with data entry directly in your script
+
+#Differences with tribbles
+tibble(
+  a = lubridate::now() + runif(1e3) * 86400,
+  b = lubridate::today() + runif(1e3) * 30,
+  c = 1:1e3,
+  d = runif(1e3),
+  e = sample(letters, 1e3, replace = TRUE)) #tibbles only print out the first 10 rows of data plus the type of each column variable next to its name
+
+#install.packages("nycflights13")
+library(nycflights13)
+nycflights13::flights %>% 
+  print(n = 10, width = Inf) #print a designated number of rows with *print(n= number of rows, width= number of columns)
+
+#Options with tibbles
+#-":" if more than n rows, print only m rows
+#-"options(tibble.print_min = Inf)" to always show all rows
+#-"options(tibble.width = Inf)" to print all columns, regardless of the screen width
+#-Use R’s built-in viewer with "View()" -> "package?tibble" to check complete list of options 
+options(tibble.width = Inf)
+
+#Pulling out a single variable from dataframe
+df <- tibble(
+  x = runif(5),
+  y = rnorm(5))
+
+df$x
+df[["x"]]#extract by name
+df[[1]] #extract by row position
+df[[2,2]] #extract by exact position
+
+#Pipes (*%%)
+df %>% .$x
+df %>% .[["x"]] #use of "." as placeholder when using pipes
+
+#Recalling a partially matching variable
+#df <- tibble(xxx = runif(5, y = rnorm(5))
+#df$xx #Warning: Unknown or uninitialised column: `xx`.NULL
+
+#Exercise: why are tibbles preferable?
+df <- data.frame(abc = 1, xyz = "a")
+df
+df$x #call by name
+df[, "xyz"] #call by exact position
+#Tibbles are preferable as they allow to recall single values from a variable in different ways, which can help when dealing with large or unorganised datasets
+```
+
+## 5.4 How can I import data?
+
+```{r}
+#heights <- read_csv("data/heights.csv") #import data with *read.csv()
+
+read_csv("a,b,c
+1,2,3
+4,5,6") #supply the data directly from the script
+
+read_csv("The first line of metadata
+  The second line of metadata
+  x,y,z
+  1,2,3", skip = 2) #to skip over a set number of lines at the top of the dataset -> *skip= n
+
+read_csv("# A comment I want to skip
+  x,y,z
+  1,2,3", comment = "#") #to drop all lines starting with a certain character -> *comment = "character"
+
+#Solutions for dataframes with nameless columns
+read_csv("1,2,3\n4,5,6", col_names = FALSE) #sequentially name columns x1, x2, etc with *col_names= FALSE #shortcut to add a new line: "*\n"
+
+read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z")) #create a vector to be used as column names with *col_names
+
+read_csv("a,b,c\n1,2,.", na = ".") #to specify "no data" cells in your dataframe, use *na= value used to represent missing data
+```
+
+## 5.5 Tidying data  using Tidyr
+
+```{r}
+library(tidyverse)
+```
+
+### 5.5.1 Tidy data
+
+```{r}
+table1
+table2
+table3
+table4a
+table4b
+
+table1 %>%
+  mutate(rate = cases / population * 10000) #compute rate per 10000
+table1 %>%
+  count(year, wt = cases)#compute rate per year
+
+#Visualizing changes over time
+library(ggplot2)
+ggplot(table1, aes(year, cases)) + 
+  geom_line(aes(group = country), colour = "grey50") + 
+  geom_point(aes(colour = country))
+```
+
+### 5.5.2 Speading and gathering data tables
+
+```{r}
+#Tidying a dataset with numerical values as column names
+table4a %>% 
+  pivot_longer(c(`1999`, `2000`), names_to = "year", values_to = "cases") #to change column names -> *pivot_longer()
+table4b %>% 
+  pivot_longer(c(`1999`, `2000`), names_to = "year", values_to = "population") #same as above
+
+#Tidying  dataset with an observation scattered across multiple rows
+table2 %>%
+    pivot_wider(names_from = type, values_from = count) #to unify observations of the same variable from on different rows -> *pivot_wider()
+```
+
+### 5.5.3 Separating and uniting data tables
+
+```{r}
+table3 %>% 
+  separate(rate, into = c("cases", "population")) #to divide columns that contain 2 or more variables at the same time -> *separate(original_column_name, into = c(vector with new column names))
+
+table3 %>% 
+  separate(rate, into = c("cases", "population"), sep = "/") #separate variables with a specific character (e.g., /)
+
+table3 %>% 
+  separate(rate, into = c("cases", "population"), convert = TRUE) #convert variables listed as characters to better data types -> *convert = TRUE
+
+table3 %>% 
+  separate(year, into = c("century", "year"), sep = 2) #split a numerical value in 2+columns after a set number f digits -> *sep= x
+
+table5 %>% 
+  unite(new, century, year, sep = "") #unite 2+ columns into one -> *unite(new, x, y, sep="")
+```
+
+### 5.5.4 Handling missing values
+
+```{r}
+stocks <- tibble(
+  year   = c(2015, 2015, 2015, 2015, 2016, 2016, 2016),
+  qtr    = c(   1,    2,    3,    4,    2,    3,    4),
+  return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)) #missing values as NA or simply absent
+
+stocks %>% 
+  pivot_wider(names_from = year, values_from = return) #make explicit the implicit missing value
+
+stocks %>% 
+  pivot_wider(names_from = year, values_from = return) %>% 
+  pivot_longer(
+    cols = c(`2015`, `2016`), 
+    names_to = "year", 
+    values_to = "return", 
+    values_drop_na = TRUE) #turn implicit missing values into a valid row of data in dataframe -> *values_drop_na= TRUE
+
+stocks %>% 
+  complete(year, qtr) #take a set of columns from original dataset, plus fill in explicit NA values where needed -> *complete(x,y)
+
+treatment <- tribble(
+  ~ person,           ~ treatment, ~response,
+  "Derrick Whitmore", 1,           7,
+  NA,                 2,           10,
+  NA,                 3,           9,
+  "Katherine Burke",  1,           4)
+treatment
+
+treatment %>% 
+  fill(person) #replace missing values in a dataset with the most recent non-missing value -> *fill(column_with_NAs)
+```
+
+## 5.7 Pipes (%%) for more readable flows
+
+```{r}
+#Telling a story with R
+
+#Little bunny Foo Foo_Went hopping through the forest_Scooping up the field mice_And bopping them on the head
+
+#library(magrittr)
+
+# foo_foo <- little_bunny()
+
+#1. Create a function for each key verb: hop(), scoop(), bop()
+# foo_foo_1 <- hop(foo_foo, through = forest)
+# foo_foo_2 <- scoop(foo_foo_1, up = field_mice)
+# foo_foo_3 <- bop(foo_foo_2, on = head) #step-by-step construction of each function
+
+#2. Overwrite original objects instead of creating multiple intermediate ones
+# foo_foo <- hop(foo_foo, through = forest)
+# foo_foo <- scoop(foo_foo, up = field_mice)
+# foo_foo <- bop(foo_foo, on = head)
+
+#3. String functions together
+# bop(
+# scoop(
+# hop(foo_foo, through = forest),
+# up = field_mice
+# ), 
+# on = head
+# )
+
+#4. Use a pipe
+# foo_foo %>%
+# hop(through = forest) %>%
+# scoop(up = field_mice) %>%
+# bop(on = head)
+
+#Classes of functions this pipe won't work for:
+
+#1. Functions already using the current environment
+assign("x", 10) #assign() to create a new variable with the iven name in the current environment
+
+"x" %>% assign(100)
+x
+
+env <- environment()
+"x" %>% assign(100, envir = env) #specify the environment for the %% to work
+
+#2. Functions using lazy evaluation
+tryCatch(stop("!"), error = function(e) "An error")
+
+stop("!") %>% 
+tryCatch(error = function(e) "An error")
+```
+
+----------
+
+# WORKSHOP 5 - Spatial data in R
+
+## 6.4 Installing the spatial R packages
+
+```{r}
+install.packages("sf") 
+install.packages("terra")
+install.packages("tmap")
+
+library(tidyverse)
+library(sf) 
+library (terra) 
+library(tmap)
+```
+
+## 6.6 Loading the spatial dataset
+
+```{r}
+library(readr)
+dat <- read_csv("C:/Users/jc819526/Downloads/data-for-course/copepods_raw.csv")
+dat
+```
+
+## 6.7 Data exploration
+
+### 6.7.1 check coordinates
+
+```{r}
+library(ggplot2)
+ggplot(dat) + 
+  aes(x = longitude, y = latitude, color = richness_raw) +
+  geom_point()
+
+ggplot(dat, aes(x = latitude, y = richness_raw)) + 
+  stat_smooth() + 
+  geom_point()
+```
+
+## 6.8 Getting going with maps
+
+```{r}
+sdat <- st_as_sf(dat, coords = c("longitude", "latitude"), 
+                 crs = 4326)
+```
+
+## 6.9 Coordinate reference system
+
+```{r}
+crs4326 <- st_crs(4326)
+crs4326
+crs4326$Name
+
+crs4326$wkt
+```
+
+## 6.10 Feature collection (points)
+
+```{r}
+sdat
+```
+
+## 6.11 Cartography
+
+```{r}
+plot(sdat["richness_raw"])
+
+plot(sdat)
+```
+
+## 6.12 Thematic maps
+
+```{r}
+tm_shape(sdat) + 
+  tm_dots(col = "richness_raw")
+
+tm_shape(sdat) + 
+  tm_symbols(col = "richness_raw") #loss of detail but data is easier to see
+```
+
+## 6.13 Mapping spatial polygons as layers
+
+### 6.13.1 Loading shapefiles
+
+```{r}
+
+```
+
+### 6.13.2 Mapping your polygons
+
+```{r}
+
+```
+
+## 6.14 Exporting your map
+
+```{r}
+
+```
+
+
