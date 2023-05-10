@@ -780,11 +780,11 @@ plot(sdat["route"])
 
 plot(sdat)
 
-tm1 <- tm_shape(sdat) + 
+tm2 <- tm_shape(sdat) + 
   tm_dots(col = "route")
 
 vignette('tmap-getstarted')
-tmap_mode("view")+
+tm3<-tmap_mode("view")+
 tm_shape(shelf, bbox = sdat) + 
   tm_polygons() +
   tm_shape(aus) + 
@@ -793,6 +793,9 @@ tm_shape(shelf, bbox = sdat) +
   tm_dots(col="route", palette ="Set3")+
 tm_tiles("Stamen.TonerLabels")+
 tm_basemap("Stamen.Watercolor")
+
+tmap_save(tm3, filename = "Route.jpg", 
+          width = 700, height = 600)
 ```
 
 
