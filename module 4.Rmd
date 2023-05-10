@@ -685,7 +685,7 @@ library(tmap)
 
 ```{r}
 library(readr)
-dat <- read_csv("C:/Users/jc819526/Downloads/data-for-course/copepods_raw.csv")
+dat <- read_csv("E:/Module04_NEW/data-for-course/copepods_raw.csv")
 dat
 ```
 
@@ -709,6 +709,7 @@ ggplot(dat, aes(x = latitude, y = richness_raw)) +
 ```{r}
 sdat <- st_as_sf(dat, coords = c("longitude", "latitude"), 
                  crs = 4326)
+summary(sdat)
 ```
 
 ## 6.9 Coordinate reference system
@@ -738,11 +739,12 @@ plot(sdat)
 ## 6.12 Thematic maps
 
 ```{r}
-tm_shape(sdat) + 
+tm1 <- tm_shape(sdat) + 
   tm_dots(col = "richness_raw")
 
-tm_shape(sdat) + 
-  tm_symbols(col = "richness_raw") #loss of detail but data is easier to see
+tmap_save(tm1, filename = "Richness-map.png", 
+          width = 600, height = 600)
+
 ```
 
 ## 6.13 Mapping spatial polygons as layers
@@ -750,19 +752,47 @@ tm_shape(sdat) +
 ### 6.13.1 Loading shapefiles
 
 ```{r}
+aus <- st_read("E:/Module04_NEW/data-for-course/spatial-data/Aussie/Aussie.shp")
 
+shelf <- st_read("E:/Module04_NEW/data-for-course/spatial-data/aus_shelf/aus_shelf.shp")
+
+aus
 ```
 
 ### 6.13.2 Mapping your polygons
 
 ```{r}
+tm_shape(shelf) + 
+  tm_polygons()
 
+tm_shape(shelf, bbox = sdat) + 
+  tm_polygons() +
+  tm_shape(aus) + 
+  tm_polygons() + 
+  tm_shape(sdat) + 
+  tm_dots()
 ```
 
 ## 6.14 Exporting your map
 
 ```{r}
+plot(sdat["route"])
 
+plot(sdat)
+
+tm1 <- tm_shape(sdat) + 
+  tm_dots(col = "route")
+
+vignette('tmap-getstarted')
+tmap_mode("view")+
+tm_shape(shelf, bbox = sdat) + 
+  tm_polygons() +
+  tm_shape(aus) + 
+  tm_polygons() +
+   tm_shape(sdat) + 
+  tm_dots(col="route", palette ="Set3")+
+tm_tiles("Stamen.TonerLabels")+
+tm_basemap("Stamen.Watercolor")
 ```
 
 
