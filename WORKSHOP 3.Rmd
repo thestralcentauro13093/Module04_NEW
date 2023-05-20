@@ -1,0 +1,16 @@
+---
+title: "WORKSHOP 3"
+author: "Maria Bologna"
+date: '2023-05-20'
+output: html_document
+---
+
+# WORKSHOP 3 - Reproducible work ####
+
+```{r}
+#Setting up Github
+
+#install.packages("usethis")
+library(usethis)
+use_git_config(user.name = "thestralcentauro13093", user.email = "bolognamaria21@gmail.com")
+```

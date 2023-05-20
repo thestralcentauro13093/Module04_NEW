@@ -1,0 +1,137 @@
+---
+title: "WORKSHOP 5"
+author: "Maria Bologna"
+date: '2023-05-20'
+output: html_document
+---
+# WORKSHOP 5 - Spatial data in R
+
+## 6.4 Installing the spatial R packages
+
+```{r, echo=T, results='hide', fig.show='hide'}
+#install.packages("sf") 
+#install.packages("terra")
+#install.packages("tmap")
+
+library(tidyverse)
+library(sf) 
+library (terra) 
+library(tmap)
+```
+
+## 6.6 Loading the spatial dataset
+
+```{r, echo=T, results='hide', fig.show='hide'}
+library(readr)
+dat <- read_csv("C:/Users/maria/Downloads/github/Module04_NEW/data-for-course/copepods_raw.csv")
+dat
+```
+
+## 6.7 Data exploration
+
+### 6.7.1 check coordinates
+
+```{r, echo=T, results='hide', fig.show='hide'}
+library(ggplot2)
+ggplot(dat) + 
+  aes(x = longitude, y = latitude, color = richness_raw) +
+  geom_point()
+
+ggplot(dat, aes(x = latitude, y = richness_raw)) + 
+  stat_smooth() + 
+  geom_point()
+```
+
+## 6.8 Getting going with maps
+
+```{r, echo=T, results='hide', fig.show='hide'}
+sdat <- st_as_sf(dat, coords = c("longitude", "latitude"), 
+                 crs = 4326)
+summary(sdat)
+```
+
+## 6.9 Coordinate reference system
+
+```{r, echo=T, results='hide', fig.show='hide'}
+crs4326 <- st_crs(4326)
+crs4326
+crs4326$Name
+
+crs4326$wkt
+```
+
+## 6.10 Feature collection (points)
+
+```{r, echo=T, results='hide', fig.show='hide'}
+sdat
+```
+
+## 6.11 Cartography
+
+```{r, echo=T, results='hide', fig.show='hide'}
+plot(sdat["richness_raw"])
+
+plot(sdat)
+```
+
+## 6.12 Thematic maps
+
+```{r, echo=T, results='hide', fig.show='hide'}
+tm1 <- tm_shape(sdat) + 
+  tm_dots(col = "richness_raw")
+
+tmap_save(tm1, filename = "Richness-map.png", 
+          width = 600, height = 600)
+
+```
+
+## 6.13 Mapping spatial polygons as layers
+
+### 6.13.1 Loading shapefiles
+
+```{r, echo=T, results='hide', fig.show='hide'}
+aus <- st_read("C:/Users/maria/Downloads/github/Module04_NEW/data-for-course/spatial-data/Aussie/Aussie.shp")
+
+shelf <- st_read("C:/Users/maria/Downloads/github/Module04_NEW/data-for-course/spatial-data/aus_shelf/aus_shelf.shp")
+
+aus
+```
+
+### 6.13.2 Mapping your polygons
+
+```{r, echo=T, results='hide', fig.show='hide'}
+tm_shape(shelf) + 
+  tm_polygons()
+
+tm_shape(shelf, bbox = sdat) + 
+  tm_polygons() +
+  tm_shape(aus) + 
+  tm_polygons() + 
+  tm_shape(sdat) + 
+  tm_dots()
+```
+
+## 6.14 Exporting your map
+
+```{r, echo=T, results='hide', fig.show='hide'}
+plot(sdat["route"])
+
+plot(sdat)
+
+tm2 <- tm_shape(sdat) + 
+  tm_dots(col = "route")
+
+vignette('tmap-getstarted')
+tm3<-tmap_mode("view")+
+tm_shape(shelf, bbox = sdat) + 
+  tm_polygons() +
+  tm_shape(aus) + 
+  tm_polygons() +
+   tm_shape(sdat) + 
+  tm_dots(col="route", palette ="Set3")+
+tm_tiles("Stamen.TonerLabels")+
+tm_basemap("Stamen.Watercolor")
+
+tmap_save(tm3, filename = "Route.jpg", 
+          width = 700, height = 600)
+```
