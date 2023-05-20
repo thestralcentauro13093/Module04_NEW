@@ -10,7 +10,7 @@ output: html_document
 ## Installing packages & dataset
 
 ```{r}
-install.packages("tidyverse")
+# install.packages("tidyverse")
 library(tidyverse)
 
 #### ctrl + alt + i -> adds a chunk =)
@@ -314,10 +314,10 @@ presidential %>%
 
 # Using a preset colour package
 
-install.packages('viridis') #package "viridis"
-install.packages('hexbin')
-library(viridis)
-library(hexbin)
+#install.packages('viridis') #package "viridis"
+#install.packages('hexbin')
+#library(viridis)
+#library(hexbin)
 
 df <- tibble( #fake dataset to create a plot 
   x = rnorm(10000),
@@ -400,7 +400,7 @@ ggsave("my-plot.pdf")
 ```{r}
 #Setting up Github
 
-install.packages("usethis")
+#install.packages("usethis")
 library(usethis)
 use_git_config(user.name = "thestralcentauro13093", user.email = "bolognamaria21@gmail.com")
 ```
@@ -453,7 +453,7 @@ tibble(
   e = sample(letters, 1e3, replace = TRUE)) #tibbles only print out the first 10 rows of data plus the type of each column variable next to its name
 
 #install.packages("nycflights13")
-library(nycflights13)
+#library(nycflights13)
 nycflights13::flights %>% 
   print(n = 10, width = Inf) #print a designated number of rows with *print(n= number of rows, width= number of columns)
 
@@ -519,7 +519,7 @@ read_csv("a,b,c\n1,2,.", na = ".") #to specify "no data" cells in your dataframe
 ## 5.5 Tidying data  using Tidyr
 
 ```{r}
-library(tidyverse)
+#library(tidyverse)
 ```
 
 ### 5.5.1 Tidy data
@@ -671,9 +671,9 @@ tryCatch(error = function(e) "An error")
 ## 6.4 Installing the spatial R packages
 
 ```{r}
-install.packages("sf") 
-install.packages("terra")
-install.packages("tmap")
+#install.packages("sf") 
+#install.packages("terra")
+#install.packages("tmap")
 
 library(tidyverse)
 library(sf) 
@@ -685,7 +685,7 @@ library(tmap)
 
 ```{r}
 library(readr)
-dat <- read_csv("E:/Module04_NEW/data-for-course/copepods_raw.csv")
+dat <- read_csv("C:/Users/maria/Downloads/Module04_NEW/data-for-course/copepods_raw.csv")
 dat
 ```
 
@@ -742,8 +742,8 @@ plot(sdat)
 tm1 <- tm_shape(sdat) + 
   tm_dots(col = "richness_raw")
 
-tmap_save(tm1, filename = "Richness-map.png", 
-          width = 600, height = 600)
+#tmap_save(tm1, filename = "Richness-map.png", 
+#          width = 600, height = 600)
 
 ```
 
@@ -752,9 +752,9 @@ tmap_save(tm1, filename = "Richness-map.png",
 ### 6.13.1 Loading shapefiles
 
 ```{r}
-aus <- st_read("E:/Module04_NEW/data-for-course/spatial-data/Aussie/Aussie.shp")
+aus <- st_read("C:/Users/maria/Downloads/Module04_NEW/data-for-course/spatial-data/Aussie/Aussie.shp")
 
-shelf <- st_read("E:/Module04_NEW/data-for-course/spatial-data/aus_shelf/aus_shelf.shp")
+shelf <- st_read("C:/Users/maria/Downloads/Module04_NEW/data-for-course/spatial-data/aus_shelf/aus_shelf.shp")
 
 aus
 ```
@@ -794,8 +794,6 @@ tm_shape(shelf, bbox = sdat) +
 tm_tiles("Stamen.TonerLabels")+
 tm_basemap("Stamen.Watercolor")
 
-tmap_save(tm3, filename = "Route.jpg", 
-          width = 700, height = 600)
+#tmap_save(tm3, filename = "Route.jpg", 
+#          width = 700, height = 600)
 ```
-
-
