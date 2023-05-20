@@ -1,0 +1,49 @@
+---
+title: "Assignment 2"
+author: "Maria Bologna"
+date: '2023-05-20'
+output: html_document
+---
+
+# ASSIGNMENT 2 - QFISH Data Analysis ####
+
+# DATA ANALYSIS
+
+## Installing packages
+
+```{r}
+
+```
+
+## Importing datasets
+
+```{r}
+gender <- read.csv("C:/Users/maria/Downloads/github/Module04_NEW/data-for-course/shark_gender.csv")
+
+fate <- read.csv("C:/Users/maria/Downloads/github/Module04_NEW/data-for-course/shark_fate.csv")
+
+gender
+fate
+
+summary(gender)
+summary(fate)
+```
+
+## Gender plot
+
+```{r}
+
+```
+
+## Fate plot
+
+```{r}
+
+```
+
+# RESULTS DISCUSSION
+
+```{r}
+
+```
+
